@@ -27,7 +27,7 @@ app.use('/', routes);
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var currUserNames = [];
-var currUserTimes=[];
+var currUserTimes = [];
 io.on('connection', function(socket) {
     socket.on('drawData', function(drawObj) {
         /*data of some user drawing
@@ -42,55 +42,62 @@ io.on('connection', function(socket) {
         this function also serves to update the 'last used' timer for users. If they haven't drawn in 5 min, dc em
         */
         var pos = currUserNames.indexOf(drawObj.un);
-        currUserTimes[pos] = new Date().getTime();//update time
+        currUserTimes[pos] = new Date().getTime(); //update time
         console.log(drawObj)
         io.emit('outDraw', drawObj);
     });
-    socket.on('getInitPic',function(usr){
+    socket.on('getInitPic', function(usr) {
         //a user just logged in, so give them the 
         //current picture by fetching it from the
         //first user in our list. also reg them
         currUserNames.push(usr.usr);
-        currUserTimes.push(new Date().getTime())
-        if(currUserNames.length==1){
+        currUserTimes.push(new Date().getTime());
+        sendUserNums();
+        if (currUserNames.length == 1) {
             //no other users, so just return 0
             console.log('first user connected!')
             return 'blank';
-        }
-        else{
+        } else {
             //ask the first user for the current pic
             //we're also senting the user who WANTS this pic
-            io.emit('getPicStart',{
-                usr:currUserNames[0],
-                wants:usr.usr
+            io.emit('getPicStart', {
+                usr: currUserNames[0],
+                wants: usr.usr
             });
         }
     });
-    socket.on('usrGivePic',function(newUsrPic){
-        //sent intitial pic to a new user
-        //we get the data and the target user
-        io.emit('sendInitPic',newUsrPic);
-    })
-    //this timer "DCs" inactive users. All this
-    // actually does is push them from the user list, so that they're not
-    //used as the new user template
-    var t = setInterval(function(){
+    socket.on('usrGivePic', function(newUsrPic) {
+            console.log('Template to send out:', newUsrPic)
+                //sent intitial pic to a new user
+                //we get the data and the target user
+            io.emit('sendInitPic', newUsrPic);
+        })
+        //this timer "DCs" inactive users. All this
+        // actually does is push them from the user list, so that they're not
+        //used as the new user template. It scans every 30 sec, to see if the last
+        ///communication btwn server and user is >5 minutes ago
+    var t = setInterval(function() {
         var now = new Date().getTime();
-        for (var i=0;i<currUserTimes.length;i++){
-            if((now-currUserTimes[i])>60000){
+        for (var i = 0; i < currUserTimes.length; i++) {
+            if ((now - currUserTimes[i]) > 300000) {
                 //more than a minute has elapsed!
-                currUserTimes.splice(i,1);
-                currUserNames.splice(i,1);
+                currUserTimes.splice(i, 1);
+                currUserNames.splice(i, 1);
+                sendUserNums();
             }
         }
-    },60000)
+    }, 30000)
+    var sendUserNums = function() {
+        var num = { num: currUserNames.length };
+        io.emit('updateUserNum', num)
+    }
 });
 io.on('error', function(err) {
     console.log("SocketIO error! Error was", err)
 });
 //set port, or process.env if not local
 
-http.listen(process.env.PORT || 8080);
+http.listen(9264);
 
 app.use(function(req, res, next) {
     var err = new Error('Not Found');

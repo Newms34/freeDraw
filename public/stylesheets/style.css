@@ -15,7 +15,7 @@ canvas {
 #cont {
   position: relative;
   width:600px;
-  top:600px;
+  top:620px;
 }
 #colIn{
     width:50%;
@@ -25,4 +25,19 @@ canvas {
     height:50px;
     margin-left:auto;
     margin-right:auto;
+    margin-top:5px;
+}
+.faqQ{
+    background:#bbf;
+    font-style:italic;
+}
+.faqQ::before{
+    content:'Q: ';
+}
+.faqA{
+    background:#ddf;
+    margin-bottom:2px;
+}
+.faqA::before{
+    content:'A: ';
 }
