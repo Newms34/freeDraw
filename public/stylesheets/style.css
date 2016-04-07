@@ -41,3 +41,28 @@ canvas {
 .faqA::before{
     content:'A: ';
 }
+#stahpButton{
+    width:150px;
+    height:150px;
+    border-radius:50%;
+    background:#D73636;
+    color:#fff;
+    font-size:30pt;
+    font-family: 'impact';
+    transition-duration:.5s;
+}
+
+#stahpButton:hover{
+    background:#F73E3E;
+}
+#serverDownBg{
+    position:fixed;
+    top:0px;
+    background:rgba(0,0,0,0.9);
+    z-index: 99;
+    width:100%;
+    height:100%;
+}
+#serverDownBg div{
+    top:20%;
+}

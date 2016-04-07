@@ -6,6 +6,7 @@ var express = require('express'),
 var app = express();
 var routes = require('./routes');
 var config = require('./.config');
+var pwd = require('./pwd')
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'html');
@@ -28,6 +29,8 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var currUserNames = [];
 var currUserTimes = [];
+var timer;
+
 io.on('connection', function(socket) {
     socket.on('drawData', function(drawObj) {
         /*data of some user drawing
@@ -60,38 +63,57 @@ io.on('connection', function(socket) {
         } else {
             //ask the first user for the current pic
             //we're also senting the user who WANTS this pic
-            io.emit('getPicStart', {
-                usr: currUserNames[0],
-                wants: usr.usr
-            });
+            askFirstUser(usr);
+
         }
     });
-    socket.on('usrGivePic', function(newUsrPic) {
-            console.log('Template to send out:', newUsrPic)
-                //sent intitial pic to a new user
-                //we get the data and the target user
-            io.emit('sendInitPic', newUsrPic);
-        })
-        //this timer "DCs" inactive users. All this
-        // actually does is push them from the user list, so that they're not
-        //used as the new user template. It scans every 30 sec, to see if the last
-        ///communication btwn server and user is >5 minutes ago
-    var t = setInterval(function() {
-        var now = new Date().getTime();
-        for (var i = 0; i < currUserTimes.length; i++) {
-            if ((now - currUserTimes[i]) > 300000) {
-                //more than a minute has elapsed!
-                currUserTimes.splice(i, 1);
-                currUserNames.splice(i, 1);
-                sendUserNums();
+    var askFirstUser = function(usr) {
+        io.emit('getPicStart', {
+            usr: currUserNames[0],
+            wants: usr.usr
+        });
+        timer = setTimeout(function() {
+            io.emit('userDC', { dcName: currUserNames[0] })
+            currUserTimes.shift();
+            currUserNames.shift();
+            sendUserNums();
+            if (currUserNames.length) {
+                //users remain
+                askFirstUser(usr); //try another user!
             }
-        }
-    }, 30000)
+        }, 700); //after 700ms (.7s), if user we ask for template has not responded, delete em
+    }
+    socket.on('usrGivePic', function(newUsrPic) {
+        //got a response! clear the timer, since we no longer need to remove that user
+        clearTimeout(timer);
+        console.log('Template to send out:', newUsrPic)
+            //sent intitial pic to a new user
+            //we get the data and the target user
+        io.emit('sendInitPic', newUsrPic);
+    })
     var sendUserNums = function() {
         var num = { num: currUserNames.length };
         io.emit('updateUserNum', num)
     }
+    socket.on('sendPwd', function(testPwd) {
+        var resp = false;
+        console.log(new Buffer(testPwd.pwd).toString('base64'))
+        if (new Buffer(testPwd.pwd).toString('base64') == pwd.pwd) {
+            resp = true;
+        }
+        var respObj = { resp: resp };
+        console.log('sending out',respObj)
+        socket.emit('passResp', respObj);
+        if (resp) {
+            console.log('SHUT DOWN EVERYTHING!')
+            //killAll();
+        }
+    })
+    var killAll = function(){
+        http.close();
+    }
 });
+
 io.on('error', function(err) {
     console.log("SocketIO error! Error was", err)
 });
@@ -126,3 +148,10 @@ app.use(function(err, req, res, next) {
         error: {}
     });
 });
+/*TO DO:
+-Add 'emergency stop' button to halt server
+-Improve draw target accuracy. Should be centered
+-Rethink DC procedure. Perhaps instead of timer,
+send out rq to first user on list. If they don't 
+respond, remove em & send to next user, and so on.
+*/
