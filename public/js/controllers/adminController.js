@@ -2,7 +2,6 @@ var app = angular.module("freeDrawAdm", []);
 var socket = io();
 
 app.controller("adminController", function($scope, $window,$http) {
-    //set an initial username
     $scope.serverRunning=true;
     $scope.stopServ = function() {
         bootbox.dialog({

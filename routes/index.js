@@ -7,4 +7,7 @@ router.get('/',function(req,res,next){
 router.get('/admin',function(req,res,next){
 	res.sendFile('admin.html',{"root":'./views'})
 })
+router.get('/music',function(req,res,next){
+	res.sendFile('music.html',{"root":'./views'})
+})
 module.exports=router;

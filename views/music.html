@@ -1,0 +1,57 @@
+<!Doctype html>
+<html>
+
+<head>
+    <title>FreeTunes: The Collaborative Music Initiative</title>
+    <link href="/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="/stylesheets/style.css" rel="stylesheet" />
+</head>
+
+<body ng-app='freeTunes' ng-controller='tuneController' id='musBody'>
+    <div class='spacer'>
+    </div>
+    <div class='noteCol' ng-repeat='nCol in noteCols track by $index' data-noteNum='{{$index}}' id='noteCol{{$index}}' style='width:{{50/noteCols.length}}%;background:hsla({{($index/noteCols.length)*360}},80%,40%,.8);box-shadow:0 0 2px 2px hsla({{($index/noteCols.length)*360}},80%,40%,.8)'>
+        <div class='noteCursTracker' style='width:{{48/noteCols.length}}%;' title='Listen to this note!'></div>
+        <div class='noteLabel' ng-click='testTune($event)'>{{nCol}}</div>
+    </div>
+    <div class='panel panel-success spacer'>
+        <div class='panel-heading' style='text-align: center;'>
+            <h3>Controls <button class='btn btn-danger' ng-click='expl();'>?</button></h3>
+        </div>
+        <div class='panel-body'>
+            <div class='col-md-12'><b>Players:</b> You are currently playing {{getPlayers()}}</div>
+            <hr/>
+            <div class='form-group col-md-12'>
+                <div class='col-md-3'>
+                    <label for='tempoC'>Tempo: {{tempo}}</label>
+                </div>
+                <div class='col-md-8'>
+                    <input id='tempoC' type='range' min=1 max=100 ng-model='tempo'>
+                </div>
+            </div>
+            <div class='form-group col-md-12'>
+                <div class='col-md-3'>
+                    <label for='tuneType'>Tone Type:</label>
+                </div>
+                <div class='col-md-8'>
+                    <select ng-model='tuneType' style='width:100%;'>
+                        <option ng-repeat='wave in waveTypes' value='{{wave}}' ng-selected='wave=="triangle"'>{{wave}}</option>
+                    </select>
+                </div>
+            </div>
+            <button class='btn btn-success' ng-click='player(noteObjs)'>&#127926; Play!</button>
+            <hr/>
+            username:{{un}}
+            <button class='btn btn-warning' onclick='window.location.href=".."'>&#128396; Switch to Drawing!</button>
+        </div>
+    </div>
+    <script src='https://cdn.socket.io/socket.io-1.2.0.js'></script>
+    <script src='https://code.jquery.com/jquery-1.11.1.js'></script>
+    <script src='/bootstrap/dist/js/bootstrap.min.js'></script>
+    <script src='/angular/angular.js'></script>
+    <script src='/bootbox/bootbox.min.js'></script>
+    <script src='/js/controllers/tuneController.js'></script>
+    <script src='/js/factories/socket.js'></script>
+</body>
+
+</html>

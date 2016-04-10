@@ -4,65 +4,161 @@ body {
     height: 100%;
     margin: 0;
 }
+
+#musBody {
+    background: linear-gradient( rgba(255, 255, 255, 0.6), rgba(0, 0, 0, 0.6)), url('./../img/musBg.jpg');
+    background-size: cover;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+}
+
+#drawBody {
+    background: linear-gradient( rgba(255, 255, 255, 0.6), rgba(0, 0, 0, 0.6)), url('./../img/drawBg.jpg');
+    background-size: cover;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+}
+
+#canvBg {
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    background: #fff;
+}
+
 canvas {
-  width: 600px;
-  height: 600px;
-  position: absolute;
-  cursor: crosshair;
-  box-shadow: 2px 2px 4px #444;
+    width: 600px;
+    height: 600px;
+    position: absolute;
+    box-shadow: 2px 2px 4px #444;
 }
 
-#cont {
-  position: relative;
-  width:600px;
-  top:620px;
+
+
+#colIn {
+    width: 50%;
 }
-#colIn{
-    width:50%;
+
+#exampDiv {
+    width: 50px;
+    height: 50px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 5px;
 }
-#exampDiv{
-    width:50px;
-    height:50px;
-    margin-left:auto;
-    margin-right:auto;
-    margin-top:5px;
+
+.faqQ {
+    background: #bbf;
+    font-style: italic;
 }
-.faqQ{
-    background:#bbf;
-    font-style:italic;
+
+.faqQ::before {
+    content: 'Q: ';
 }
-.faqQ::before{
-    content:'Q: ';
+
+.faqA {
+    background: #ddf;
+    margin-bottom: 2px;
 }
-.faqA{
-    background:#ddf;
-    margin-bottom:2px;
+
+.faqA::before {
+    content: 'A: ';
 }
-.faqA::before{
-    content:'A: ';
-}
-#stahpButton{
-    width:150px;
-    height:150px;
-    border-radius:50%;
-    background:#D73636;
-    color:#fff;
-    font-size:30pt;
+
+#stahpButton {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: #D73636;
+    color: #fff;
+    font-size: 30pt;
     font-family: 'impact';
-    transition-duration:.5s;
+    transition-duration: .5s;
 }
 
-#stahpButton:hover{
-    background:#F73E3E;
+#stahpButton:hover {
+    background: #F73E3E;
 }
-#serverDownBg{
-    position:fixed;
-    top:0px;
-    background:rgba(0,0,0,0.9);
+
+#serverDownBg {
+    position: fixed;
+    top: 0px;
+    background: rgba(0, 0, 0, 0.9);
     z-index: 99;
-    width:100%;
-    height:100%;
+    width: 100%;
+    height: 100%;
 }
-#serverDownBg div{
-    top:20%;
+
+#serverDownBg div {
+    top: 20%;
+}
+
+.noteCol {
+    height: 850px;
+    /*border: 1px solid #000;*/
+    display: inline-block;
+    margin-right: 3px;
+}
+
+.spacer {
+    right:0px;
+    text-align: center;
+    position: fixed;
+    display: inline-block;
+    width: 47%;
+}
+
+.noteLabel {
+    background: #333;
+    color: #fff;
+    text-align: center;
+    font-weight: bold;
+    font-size: larger;
+    transform: translateZ(5px);
+    transition-duration: .5s;
+    cursor: pointer;
+    transition-duration: .2s;
+}
+
+.noteLabel:hover {
+    background: #555;
+}
+
+.noteCursTracker {
+    position: absolute;
+    width: 100%;
+    height: 15px;
+    top: 0px;
+    transform: translateZ(2px);
+    background: rgba(0, 0, 0, .8);
+    pointer-events: none;
+}
+
+.noteBlock {
+    position: absolute;
+    z-index: 0;
+    background: #ccc;
+    transition-duration: .5s;
+    transform: translateZ(1px);
+}
+
+.noteBlock:hover {
+    background: #ddd;
+}
+
+.floaty {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 30%;
+}
+
+#keyBoard {
+    /*position:absolute;*/
+    left: 0px;
+}
+#drawInd{
+    pointer-events:none;
+    position:absolute;
+    z-index:109;
 }

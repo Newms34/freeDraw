@@ -10,6 +10,7 @@ app.controller("MainController", function($scope, $window) {
     $scope.trans = 100;
     $scope.colRaw = '#000000';
     $scope.col = 'rgba(0,0,0,1)';
+    $scope.outlineCol = 'rgb(255,255,255)';
     $scope.numPlayers = 2;
     $scope.isDrawing = false;
     $scope.serverRunning = true;
@@ -45,7 +46,7 @@ app.controller("MainController", function($scope, $window) {
         $scope.numPlayers = numbs.num;
         $scope.$digest();
     })
-    
+
     socket.on('userDC', function(marvel) {
         if ($scope.un == marvel.dcName) {
             bootbox.confirm('It looks like you&rsquo;ve lost your connection! Refresh page?', function(resp) {
@@ -56,9 +57,10 @@ app.controller("MainController", function($scope, $window) {
         }
     })
     socket.on('passResp', function(servStat) {
-        alert('TEST')
+        $scope.serverRunning = false;
+        $scope.$digest();
     });
-    console.log(socket)
+
     $scope.canv.onmousedown = function(e) {
         //start draw
         console.log(e.button)
@@ -80,15 +82,24 @@ app.controller("MainController", function($scope, $window) {
         //polyfill type stuffs!
         e.x = e.x || e.clientX;
         e.y = e.y || e.clientY;
+        var realX = e.x - ($scope.sz / 2);
+        var realY = e.y - ($scope.sz / 2);
         if ($scope.isDrawing) {
+            $('#drawInd').css('display', 'none');
             var drawObj = {
                 un: $scope.un,
-                x: e.x,
-                y: e.y,
+                x: realX,
+                y: realY,
                 col: $scope.col,
                 sz: $scope.sz
             };
             socket.emit('drawData', drawObj)
+        } else {
+            $('#drawInd').css({
+                'display': 'block',
+                'top': realY + 'px',
+                'left': realX + 'px'
+            });
         }
     }
     $scope.setCol = function() {
@@ -98,10 +109,11 @@ app.controller("MainController", function($scope, $window) {
         r = parseInt((colArr[0] + '' + colArr[1]), 16);
         g = parseInt((colArr[2] + '' + colArr[3]), 16);
         b = parseInt((colArr[4] + '' + colArr[5]), 16);
-        $scope.col = 'rgba(' + r + ',' + g + ',' + b + ',' + ($scope.trans / 100) + ')'
+        $scope.col = 'rgba(' + r + ',' + g + ',' + b + ',' + ($scope.trans / 100) + ')';
+        $scope.outlineCol = 'rgb(' + (255 - r) + ',' + (255 - g) + ',' + (255 - b) + ')';
+        console.log($scope.col, $scope.outlineCol)
     }
-    $scope.qs = ['one', 'two', 'blue']
-    $scope.explText = '<h3>FreeDraw</h3><h4>The Collaborative Graffiti Initiative</h4><hr/><b>About:</b><br/>Free draw is a collaborative drawing app, where you&rsquo;re drawing with anonymous other users.<ul><li>You don&rsquo;t know who you&rsquo;re drawing with!</li><li>I don&rsquo;t save the pictures!</li><li>Seriously. I don&rsquo;t. Everything&rsquo;s running off a <a href="https://www.raspberrypi.org/products/model-b-plus/" target="_blank">Raspberry Pi B+</a> server, so I dont even have the ROOM to save your stuff!</li></ul><hr/><b>FAQ:</b><br/><div class="faqQ">How does this work?</div><div class="faqA">In short, magic. In slightly longer, I&rsquo;m using socket.io and HTML canvas to transmit your drawing "commands" thru the server and to other users.</div><div class="faqQ">Really. You can be honest. Do you save anything?</div><div class="faqA">For the last time, no. And it&rsquo;s not just a question of me wanting to keep you safe: I literally cannot save stuff to my server, since there&rsquo;s not enough room!</div><div class="faqQ">But I really like this picture! Can&rsquo;t I keep it?</div><div class="faqA">Of course you can! One of the (many) cool things about HTML Canvas is that it is, in many ways, treated as an image in the browser. To that end, you can save it (right-click, save image, etc.), print it, enlarge it, put it on a coffee mug, etc.</div><div class="faqQ">Can I PLEASE start with an image?</div><div class="faqA">In general, no. That&rsquo;s kinda against the spirit of this app. However, there ARE ways to "hack" the program to get a starting image. I&rsquo;ll let you figure those out, but remember that this will only really work if you are the ONLY person online at the time!</div>';
+    $scope.explText = '<h3>FreeDraw</h3><h4>The Collaborative Graffiti Initiative</h4><hr/><b>About:</b><br/>FreeDraw is a collaborative drawing app, where you&rsquo;re drawing with anonymous other users.<ul><li>You don&rsquo;t know who you&rsquo;re drawing with!</li><li>I don&rsquo;t save the pictures!</li><li>Seriously. I don&rsquo;t. Everything&rsquo;s running off a <a href="https://www.raspberrypi.org/products/model-b-plus/" target="_blank">Raspberry Pi B+</a> server, so I dont even have the ROOM to save your stuff!</li></ul><hr/><b>FAQ:</b><br/><div class="faqQ">How does this work?</div><div class="faqA">In short, magic. In slightly longer, I&rsquo;m using socket.io and HTML canvas to transmit your drawing "commands" thru the server and to other users.</div><div class="faqQ">Really. You can be honest. Do you save anything?</div><div class="faqA">For the last time, no. And it&rsquo;s not just a question of me wanting to keep you safe: I literally cannot save stuff to my server, since there&rsquo;s not enough room!</div><div class="faqQ">But I really like this picture! Can&rsquo;t I keep it?</div><div class="faqA">Of course you can! One of the (many) cool things about HTML Canvas is that it is, in many ways, treated as an image in the browser. To that end, you can save it (right-click, save image, etc.), print it, enlarge it, put it on a coffee mug, etc.</div><div class="faqQ">Can I PLEASE start with an image?</div><div class="faqA">In general, no. That&rsquo;s kinda against the spirit of this app. However, there ARE ways to "hack" the program to get a starting image. I&rsquo;ll let you figure those out, but remember that this will only really work if you are the ONLY person online at the time!</div>';
     $scope.expl = function() {
         bootbox.alert($scope.explText)
     };
@@ -113,5 +125,9 @@ app.controller("MainController", function($scope, $window) {
         } else {
             return 'with ' + ($scope.numPlayers - 1) + ' other players!'
         }
+    }
+    $scope.getCurse = function(){
+        console.log($scope.sz>3? 'none':'crosshair')
+        return $scope.sz>3? 'none':'crosshair';
     }
 });

@@ -29,7 +29,7 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var currUserNames = [];
 var currUserTimes = [];
-var timer;
+var timer,museTimer;
 
 io.on('connection', function(socket) {
     socket.on('drawData', function(drawObj) {
@@ -46,9 +46,51 @@ io.on('connection', function(socket) {
         */
         var pos = currUserNames.indexOf(drawObj.un);
         currUserTimes[pos] = new Date().getTime(); //update time
-        console.log(drawObj)
         io.emit('outDraw', drawObj);
     });
+    
+    socket.on('getInitTune', function(usr) {
+        //a user just logged in, so give them the 
+        //current tune by fetching it from the
+        //first user in our list. also register them
+        currUserNames.push(usr.usr);
+        currUserTimes.push(new Date().getTime());
+        sendUserNums();
+        if (currUserNames.length == 1) {
+            //no other users, so just return 0
+            console.log('first user connected!')
+            return 'blank';
+        } else {
+            //ask the first user for the current pic
+            //we're also sending the user who WANTS this tune
+            askFirstMuse(usr);
+        }
+        console.log('User List',currUserNames)
+    });
+    var askFirstMuse = function(usr) {
+        io.emit('getTuneStart', {
+            usr: currUserNames[0],
+            wants: usr.usr
+        });
+        museTimer = setTimeout(function() {
+            //user timed out!
+            io.emit('userDC', { dcName: currUserNames[0] })
+            currUserTimes.shift();
+            currUserNames.shift();
+            sendUserNums();
+            if (currUserNames.length && currUserNames[0]!=usr.usr) {
+                //users remain
+                askFirstUser(usr); //try another user!
+            }
+        }, 700); //after 700ms (.7s), if user we ask for template has not responded, delete em
+    }
+    socket.on('usrGiveTune', function(newUsrTune) {
+        //got a response! clear the timer, since we no longer need to remove that user
+        clearTimeout(museTimer);
+            //sent intitial tune to a new user
+            //we get the data and the target user
+        io.emit('sendInitTune', newUsrTune);
+    })
     socket.on('getInitPic', function(usr) {
         //a user just logged in, so give them the 
         //current picture by fetching it from the
@@ -62,7 +104,7 @@ io.on('connection', function(socket) {
             return 'blank';
         } else {
             //ask the first user for the current pic
-            //we're also senting the user who WANTS this pic
+            //we're also sending the user who WANTS this pic
             askFirstUser(usr);
 
         }
@@ -83,6 +125,7 @@ io.on('connection', function(socket) {
             }
         }, 700); //after 700ms (.7s), if user we ask for template has not responded, delete em
     }
+    
     socket.on('usrGivePic', function(newUsrPic) {
         //got a response! clear the timer, since we no longer need to remove that user
         clearTimeout(timer);
@@ -103,15 +146,24 @@ io.on('connection', function(socket) {
         }
         var respObj = { resp: resp };
         console.log('sending out',respObj)
-        socket.emit('passResp', respObj);
+        io.emit('passResp', respObj);
         if (resp) {
-            console.log('SHUT DOWN EVERYTHING!')
-            //killAll();
+            killAll();
         }
     })
     var killAll = function(){
+        console.log('killinz')
         http.close();
+        process.exit();
     }
+    socket.on('noteSrv',function(noteObj){
+        console.log('note placed:', noteObj)
+        io.emit('noteCli',noteObj)
+    })
+    socket.on('noteRemSrv',function(noteObj){
+        console.log('note removed:', noteObj)
+        io.emit('noteRemCli',noteObj)
+    })
 });
 
 io.on('error', function(err) {
@@ -151,7 +203,4 @@ app.use(function(err, req, res, next) {
 /*TO DO:
 -Add 'emergency stop' button to halt server
 -Improve draw target accuracy. Should be centered
--Rethink DC procedure. Perhaps instead of timer,
-send out rq to first user on list. If they don't 
-respond, remove em & send to next user, and so on.
 */
