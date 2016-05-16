@@ -1,16 +1,20 @@
 #FreeDraw
 ##The Collaborative Drawing and Music Initiative
-----
-[Click here to play!](71.230.199.98:9264)
+
 ----
 ##Contents
-
+ - [Play](#play)
  - [What Is FreeDraw](#what-is-freedraw)
  - [Usage](#usage)
  - [Behind the Scenes](#behind-the-scenes)
  - [Author](#author)
  - [License](#license)
 
+----
+##Play
+[Click here to play!](http://71.230.199.98:9264)
+
+----
 ##What is FreeDraw?
 FreeDraw and its sister, FreeTunes, are collaborative drawing apps with a twist: nothing's saved and you're completely anonymous! Each picture (or song) only remains active as long as participants are currently playing. Otherwise, you start with a blank canvas!
 
