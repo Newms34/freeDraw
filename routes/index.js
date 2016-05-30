@@ -5,9 +5,9 @@ router.get('/',function(req,res,next){
 	res.sendFile('index.html',{"root":'./views'});
 });
 router.get('/admin',function(req,res,next){
-	res.sendFile('admin.html',{"root":'./views'})
-})
+	res.sendFile('admin.html',{"root":'./views'});
+});
 router.get('/music',function(req,res,next){
-	res.sendFile('music.html',{"root":'./views'})
-})
+	res.sendFile('music.html',{"root":'./views'});
+});
 module.exports=router;
