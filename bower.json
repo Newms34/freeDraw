@@ -1,0 +1,35 @@
+{
+  "name": "FreeDraw",
+  "description": "The collaborative Graffiti Initiative. Draw with friends! Or enemies!",
+  "main": "index.js",
+  "authors": [
+    "David Newman"
+  ],
+  "license": "ISC",
+  "keywords": [
+    "draw",
+    "canvas",
+    "collaboration"
+  ],
+  "homepage": "https://github.com/Newms34/freeDraw",
+  "moduleType": [
+    "node"
+  ],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular-sanitize": "~1.4.1",
+    "angular": "~1.5.6",
+    "bootstrap": "~3.3.6",
+    "ngDialog": "~0.3.12",
+    "jquery": "~2.2.4",
+    "bootbox.js": "bootbox#~4.4.0",
+    "socket.io": "~1.4.6",
+    "socket.io-client": "~1.4.6"
+  }
+}
