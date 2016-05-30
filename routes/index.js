@@ -10,4 +10,7 @@ router.get('/admin',function(req,res,next){
 router.get('/music',function(req,res,next){
 	res.sendFile('music.html',{"root":'./views'});
 });
+router.get('/temp',function(req,res,next){
+	res.send('HI');
+});
 module.exports=router;
